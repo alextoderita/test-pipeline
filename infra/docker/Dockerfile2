@@ -1,0 +1,7 @@
+FROM tomcat:8
+
+# add server config file
+COPY infra/tomcat/server.xml /usr/local/tomcat/conf/
+
+# copy static content
+COPY app2 /usr/local/tomcat/webapps/

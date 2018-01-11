@@ -23,7 +23,7 @@ def getSourceCode(projectGitURL, gitCredentialsId){
 
 def buildDockerImage(dockerImageName, dockerFileName){
 	stage("Build Docker image"){
-		sh "sudo docker build -t ${dockerImageName} . --file infra/docker/${dockerFilename}"
+		sh "sudo docker build -t ${dockerImageName} . --file infra/docker/${dockerFileName}"
 	}
 }
 
