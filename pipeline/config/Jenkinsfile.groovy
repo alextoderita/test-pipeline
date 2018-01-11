@@ -4,13 +4,37 @@ def gitCredentialsId = "sapient-creds"
 
 node("master"){
     getSourceCode(projectGitURL, gitCredentialsId)
-    buildDockerImage("sapient-app1-tomcat", "Dockerfile1")
-    buildDockerImage("sapient-app2-tomcat", "Dockerfile2")
-    deployDockerContainer("sapient-app1-com", "sapient-app1-tomcat", "8081")
-    deployDockerContainer("sapient-app2-com", "sapient-app2-tomcat", "8082")
+    buildDockerImageParallel()
+    deployDockerImageParallel()
     runInput()
     deleteDockerContainer("sapient-app1-com")
     deleteDockerContainer("sapient-app2-com")
+}
+
+def buildDockerImageParallel(){
+  steps {
+    parallel(
+      a: {
+        buildDockerImage("sapient-app1-tomcat", "Dockerfile1")
+      },
+      b: {
+        buildDockerImage("sapient-app2-tomcat", "Dockerfile2")
+      }
+    )
+  }
+}
+
+def deployDockerImageParallel(){
+  steps {
+    parallel(
+      a: {
+        deployDockerContainer("sapient-app1-com", "sapient-app1-tomcat", "8081")
+      },
+      b: {
+        deployDockerContainer("sapient-app2-com", "sapient-app2-tomcat", "8082")
+      }
+    )
+  }
 }
 
 def getSourceCode(projectGitURL, gitCredentialsId){
