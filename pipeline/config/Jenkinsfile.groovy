@@ -12,6 +12,7 @@ node("master"){
 }
 
 def buildDockerImageParallel(){
+stage('run-parallel-builds') {
   steps {
     parallel(
       a: {
@@ -22,9 +23,11 @@ def buildDockerImageParallel(){
       }
     )
   }
+  }
 }
 
 def deployDockerImageParallel(){
+stage('run-parallel-deployment') {
   steps {
     parallel(
       a: {
@@ -34,6 +37,7 @@ def deployDockerImageParallel(){
         deployDockerContainer("sapient-app2-com", "sapient-app2-tomcat", "8082")
       }
     )
+  }
   }
 }
 
