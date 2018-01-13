@@ -4,8 +4,8 @@ def gitCredentialsId = "jenkins-git-credentials"
 
 node("master"){
     getSourceCode(projectGitURL, gitCredentialsId)
-    buildDockerImage("app1-image", "app1-com")
-    buildDockerImage("app2-image", "app2-com")
+    buildDockerImage("app1-image", "Dockerfile1")
+    buildDockerImage("app2-image", "Dockerfile2")
     deployDockerContainer("app1-image", "app1-com", "8081")
     deployDockerContainer("app2-image", "app2-com", "8082")
     runInput()
