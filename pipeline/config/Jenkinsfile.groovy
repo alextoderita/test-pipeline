@@ -1,44 +1,16 @@
-def projectGitURL = "https://github.com/alextoderita/sapient.git"
-def gitCredentialsId = "sapient-creds"
+def projectGitURL = "https://github.com/alextoderita/test-pipeline.git"
+def gitCredentialsId = "jenkins-git-credentials"
 
 
 node("master"){
     getSourceCode(projectGitURL, gitCredentialsId)
-    buildDockerImageParallel()
-    deployDockerImageParallel()
+    buildDockerImage("app1-image", "app1-com")
+    buildDockerImage("app2-image", "app2-com")
+    deployDockerContainer("app1-image", "app1-com", "8081")
+    deployDockerContainer("app2-image", "app2-com", "8082")
     runInput()
-    deleteDockerContainer("sapient-app1-com")
-    deleteDockerContainer("sapient-app2-com")
-}
-
-def buildDockerImageParallel(){
-stage('run-parallel-builds') {
-  steps {
-    parallel(
-      a: {
-        buildDockerImage("sapient-app1-tomcat", "Dockerfile1")
-      },
-      b: {
-        buildDockerImage("sapient-app2-tomcat", "Dockerfile2")
-      }
-    )
-  }
-  }
-}
-
-def deployDockerImageParallel(){
-stage('run-parallel-deployment') {
-  steps {
-    parallel(
-      a: {
-        deployDockerContainer("sapient-app1-com", "sapient-app1-tomcat", "8081")
-      },
-      b: {
-        deployDockerContainer("sapient-app2-com", "sapient-app2-tomcat", "8082")
-      }
-    )
-  }
-  }
+    deleteDockerContainer("app1-com")
+    deleteDockerContainer("app2-com")
 }
 
 def getSourceCode(projectGitURL, gitCredentialsId){
@@ -55,7 +27,7 @@ def buildDockerImage(dockerImageName, dockerFileName){
 	}
 }
 
-def deployDockerContainer(dockerContainerName, dockerImageName, port){
+def deployDockerContainer(dockerImageName, dockerContainerName, port){
 	stage("Deploy Docker container"){
 		sh "sudo docker run --security-opt=apparmor:unconfined --security-opt seccomp:unconfined --privileged -p ${port}:8080 -d --name ${dockerContainerName} ${dockerImageName}"
 	}
